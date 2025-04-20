@@ -25,8 +25,9 @@ class viewModel: ViewModel() {
 
     fun register(email: String, password: String) {
         viewModelScope.launch {
-            val isSuccess = repository.register(this@viewModel.email.value ?: "", this@viewModel.password.value ?: "")
+            val isSuccess = repository.register(email, password) // << כאן השינוי
             _authResult.value = isSuccess
         }
     }
+
 }

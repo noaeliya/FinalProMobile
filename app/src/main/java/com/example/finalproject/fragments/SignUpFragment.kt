@@ -1,6 +1,7 @@
 package com.example.finalproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +41,7 @@ class SignUpFragment : Fragment() {
         // כאן דוגמה ללחיצה על כפתור – תעדכני לפי ה־binding שלך
         // נניח שיש לך כפתור עם ID בשם btnSignUp
         view.findViewById<Button>(R.id.signUpBtn).setOnClickListener {
+            Log.d("SignUp", "Button clicked") // עוזר לבדוק אם באמת נלחץ
             val email = view.findViewById<EditText>(R.id.emailSignUp).text.toString()
             val password = view.findViewById<EditText>(R.id.passwordSignUp).text.toString()
             _viewModel.register(email, password)
