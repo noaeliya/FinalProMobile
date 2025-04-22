@@ -22,6 +22,7 @@ private const val ARG_PARAM2 = "param2"
 class authFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var forSignUpBtn: TextView? = null
+    private var signInBtn: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,11 @@ class authFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         forSignUpBtn = view.findViewById(R.id.forSignUpBtn)
+        signInBtn = view.findViewById(R.id.signInBtn)
+
+        signInBtn?.setOnClickListener {
+
+        }
 
         forSignUpBtn?.setOnClickListener {
             findNavController().navigate(R.id.action_authFragment_to_signUpFragment)

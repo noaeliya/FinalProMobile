@@ -16,6 +16,7 @@ import com.example.finalproject.viewModel
 class SignUpFragment : Fragment() {
 
     private lateinit var _viewModel: viewModel
+    private lateinit var registerBtn: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,21 +28,18 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // התחברות ל־ViewModel
         _viewModel = ViewModelProvider(this).get(viewModel::class.java)
+        registerBtn = view.findViewById(R.id.signUpBtn)
 
-        // כאן דוגמה איך תוכלי להאזין לסטטוס ההרשמה
         _viewModel.authResult.observe(viewLifecycleOwner) { success ->
             if (success) {
-                // נניח שתרצי לעבור למסך אחר או להראות טוסט
                 Toast.makeText(requireContext(), "נרשמת בהצלחה!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // כאן דוגמה ללחיצה על כפתור – תעדכני לפי ה־binding שלך
-        // נניח שיש לך כפתור עם ID בשם btnSignUp
-        view.findViewById<Button>(R.id.signUpBtn).setOnClickListener {
-            Log.d("SignUp", "Button clicked") // עוזר לבדוק אם באמת נלחץ
+
+        registerBtn.setOnClickListener {
+            Log.d("SignUp", "Button clicked")
             val email = view.findViewById<EditText>(R.id.emailSignUp).text.toString()
             val password = view.findViewById<EditText>(R.id.passwordSignUp).text.toString()
             _viewModel.register(email, password)
