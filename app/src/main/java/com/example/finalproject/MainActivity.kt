@@ -5,11 +5,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.finalproject.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.navigation.fragment.findNavController
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.action_home -> {
-
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.HomePageFragment)
                     true
                 }
                 R.id.action_profile -> {
@@ -56,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_add -> {
-
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.AddingPostFragment)
                     true
                 }
                 else -> false

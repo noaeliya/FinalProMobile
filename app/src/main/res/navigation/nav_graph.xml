@@ -14,14 +14,30 @@
             android:id="@+id/action_authFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
         <action
-            android:id="@+id/action_authFragment_to_signUpFragment2"
-            app:destination="@id/signUpFragment" />
+            android:id="@+id/action_authFragment_to_HomePageFragment"
+            app:destination="@id/HomePageFragment" />
+
     </fragment>
 
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.finalproject.fragments.SignUpFragment"
         android:label="Sign Up"
-        tools:layout="@layout/fragment_sign_up" />
+        tools:layout="@layout/fragment_sign_up" >
+
+        <action
+            android:id="@+id/action_signUpFragment_to_HomePageFragment"
+            app:destination="@id/HomePageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/AddingPostFragment"
+        android:name="com.example.finalproject.fragments.AddingPostFragment"
+        tools:layout="@layout/fragment_adding_post" />
+
+    <fragment
+        android:id="@+id/HomePageFragment"
+        android:name="com.example.finalproject.fragments.HomePageFragment"
+        tools:layout="@layout/fragment_home_page" />
 
 </navigation>

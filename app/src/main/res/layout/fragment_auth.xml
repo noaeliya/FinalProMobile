@@ -26,11 +26,13 @@
             android:layout_height="wrap_content" />
 
         <EditText
+            android:id="@+id/signInEmail"
             android:hint="אימייל"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <EditText
+            android:id="@+id/signInPassword"
             android:hint="סיסמה"
             android:inputType="textPassword"
             android:layout_marginTop="8dp"

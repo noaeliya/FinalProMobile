@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
@@ -20,13 +22,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class authFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var forSignUpBtn: TextView? = null
     private var signInBtn: Button? = null
+    private var _viewModel: viewModel? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,11 +37,17 @@ class authFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         forSignUpBtn = view.findViewById(R.id.forSignUpBtn)
         signInBtn = view.findViewById(R.id.signInBtn)
 
-        signInBtn?.setOnClickListener {
+        val email = view.findViewById<EditText>(R.id.signInEmail).text.trim()
+        val password = view.findViewById<EditText>(R.id.signInPassword).text.trim()
 
+        signInBtn?.setOnClickListener {
+            _viewModel?.login(email,password)
+            Toast.makeText(requireContext(), " התחברת !", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_authFragment_to_HomePageFragment)
         }
 
         forSignUpBtn?.setOnClickListener {

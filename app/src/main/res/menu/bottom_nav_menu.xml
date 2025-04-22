@@ -3,14 +3,14 @@
 
     <item
         android:id="@+id/action_home"
-        android:title="home"
+        android:title="בית"
         android:icon="@drawable/ic_home1"
         />
 
 
     <item
         android:id="@+id/action_profile"
-        android:title="profile"
+        android:title="פרופיל"
         android:icon="@drawable/ic_profile1"
         />
 
