@@ -24,7 +24,7 @@ private const val ARG_PARAM2 = "param2"
 class authFragment : Fragment() {
     private var forSignUpBtn: TextView? = null
     private var signInBtn: Button? = null
-    private var _viewModel: viewModel? = null
+    private var _viewModel: ViewModel? = null
 
 
     override fun onCreateView(

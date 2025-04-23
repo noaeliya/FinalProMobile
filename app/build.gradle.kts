@@ -1,14 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
     id("kotlin-parcelize")
-
 
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
-
     id ("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin") version "2.7.5"
 }
 
 android {
@@ -66,6 +64,7 @@ dependencies {
 
     //עבור העלאת תמונה לאפליקציה:
     implementation(libs.glide)
+    implementation(libs.androidx.lifecycle.viewmodel.android)
     annotationProcessor(libs.compiler)
     // kapt("com.github.bumptech.glide:compiler:4.13.0")
 
@@ -89,6 +88,11 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
     implementation(libs.play.services.base)
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+
 
 
     testImplementation(libs.junit)

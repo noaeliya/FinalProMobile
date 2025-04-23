@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_search -> {
-
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.SearchBookAPIFragment)
                     true
                 }
                 R.id.action_add -> {

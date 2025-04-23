@@ -29,6 +29,7 @@ auth = "23.2.0"
 
 playServicesMaps = "18.1.0"
 playServicesLocation = "21.0.1"
+lifecycleViewmodelAndroid = "2.8.7"
 
 
 
@@ -67,6 +68,7 @@ material-v160 = { module = "com.google.android.material:material", version.ref =
 material-vversion = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+androidx-lifecycle-viewmodel-android = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-android", version.ref = "lifecycleViewmodelAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

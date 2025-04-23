@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.finalproject.entities.BookItem
 import com.example.finalproject.entities.UploadState
-import com.example.finalproject.fragments.AuthRepository
 import kotlinx.coroutines.launch
 
-class viewModel: ViewModel() {
+class ViewModel: ViewModel() {
 
     private val repository = AuthRepository()
 
@@ -22,9 +22,18 @@ class viewModel: ViewModel() {
     private val _uploadState = MutableLiveData<UploadState>()
     val uploadState: LiveData<UploadState> = _uploadState
 
+    private val _books = MutableLiveData<List<BookItem>>()
+    val books: LiveData<List<BookItem>> = _books
+
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> = _loading
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     fun login(email: CharSequence, password: CharSequence) {
         viewModelScope.launch {
-            val isSuccess = repository.login(this@viewModel.email.value ?: "", this@viewModel.password.value ?: "")
+            val isSuccess = repository.login(this@ViewModel.email.value ?: "", this@ViewModel.password.value ?: "")
             _authResult.value = isSuccess
         }
     }
@@ -45,6 +54,18 @@ class viewModel: ViewModel() {
                 _uploadState.value = UploadState.Success
             } catch (e: Exception) {
                 _uploadState.value = UploadState.Error(e.message ?: "שגיאה לא ידועה")
+            }
+        }
+    }
+
+    fun search(query: String) {
+        _loading.value = true
+        repository.searchBooks(query) { result ->
+            _loading.postValue(false)
+            result.onSuccess {
+                _books.postValue(it.items)
+            }.onFailure {
+                _error.postValue(it.message)
             }
         }
     }

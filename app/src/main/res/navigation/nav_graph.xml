@@ -38,6 +38,43 @@
     <fragment
         android:id="@+id/HomePageFragment"
         android:name="com.example.finalproject.fragments.HomePageFragment"
-        tools:layout="@layout/fragment_home_page" />
+        tools:layout="@layout/fragment_home_page" >
+        <action
+            android:id="@+id/action_HomePageFragment_to_AddingPostFragment"
+            app:destination="@id/AddingPostFragment" />
+        <action
+            android:id="@+id/action_HomePageFragment_to_SearchBookAPIFragment"
+            app:destination="@id/SearchBookAPIFragment" />
+    </fragment>
 
-</navigation>
+    <fragment
+        android:id="@+id/booksListFragment"
+        android:name="com.example.finalproject.fragments.BooksListFragment"
+        tools:layout="@layout/fragment_books_list"
+        android:label="Books List">
+
+        <action
+            android:id="@+id/action_booksListFragment_to_bookFragment"
+            app:destination="@id/bookFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookFragment"
+        android:name="com.example.finalproject.fragments.HomePageFragment"
+        tools:layout="@layout/fragment_home_page">
+    <argument
+        android:name="volumeInfo"
+        app:argType="com.example.finalproject.entities.VolumeInfo" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/SearchBookAPIFragment"
+        android:name="com.example.finalproject.fragments.SearchBookAPIFragment"
+        tools:layout="@layout/fragment_search_book_a_p_i" >
+        <action
+            android:id="@+id/action_SearchBookAPIFragment_to_booksListFragment"
+            app:destination="@id/booksListFragment" />
+    </fragment>
+
+
+    </navigation>

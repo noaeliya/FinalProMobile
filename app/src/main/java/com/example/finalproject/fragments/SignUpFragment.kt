@@ -11,11 +11,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.finalproject.R
-import com.example.finalproject.viewModel
+import com.example.finalproject.ViewModel
 
 class SignUpFragment : Fragment() {
 
-    private lateinit var _viewModel: viewModel
+    private lateinit var _viewModel: ViewModel
     private lateinit var registerBtn: Button
 
     override fun onCreateView(
@@ -28,7 +28,7 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _viewModel = ViewModelProvider(this).get(viewModel::class.java)
+        _viewModel = ViewModelProvider(this).get(ViewModel::class.java)
         registerBtn = view.findViewById(R.id.signUpBtn)
 
         _viewModel.authResult.observe(viewLifecycleOwner) { success ->
