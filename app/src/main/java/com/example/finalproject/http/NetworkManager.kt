@@ -2,7 +2,6 @@ package com.example.finalproject.http
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 object NetworkManager {
     const val API_KEY = "AIzaSyAaDjbF4uLjEMK53gVaeOoY0isxyrRmBAw"
 //    const val API_KEY = "AIzaSyAcJst4JfkSw6FfcljZ5gQt00pToYPt7q0"
