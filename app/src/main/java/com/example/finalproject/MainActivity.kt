@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.checkUserLoggedIn()
 
-        viewModel.isUserLoggedIn.observe(this) { isLoggedIn ->
+        viewModel.isUserLoggedIn.observe(this@MainActivity) { isLoggedIn ->
             if (isLoggedIn) {
                 findNavController(R.id.nav_host_fragment).navigate(R.id.HomePageFragment)
             }

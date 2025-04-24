@@ -1,12 +1,15 @@
 package com.example.finalproject
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalproject.entities.BookItem
 import com.example.finalproject.entities.UploadState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ViewModel: ViewModel() {
@@ -37,16 +40,28 @@ class ViewModel: ViewModel() {
     private val _isUserLoggedIn = MutableLiveData<Boolean>()
     val isUserLoggedIn: LiveData<Boolean> = _isUserLoggedIn
 
-    fun login(email: CharSequence, password: CharSequence) {
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    val loginState: StateFlow<LoginState> = _loginState
+
+    fun login(email: String, password: String) {
+        _loginState.value = LoginState.Loading
+
         viewModelScope.launch {
-            val isSuccess = repository.login(this@ViewModel.email.value ?: "", this@ViewModel.password.value ?: "")
-            _authResult.value = isSuccess
+            val result = repository.login(email, password)
+            _loginState.value = if (result.isSuccess) {
+                LoginState.Success
+            } else {
+                LoginState.Error(result.exceptionOrNull()?.message ?: "שגיאה לא ידועה")
+            }
         }
     }
 
+
+
+
     fun register(email: String, password: String) {
         viewModelScope.launch {
-            val isSuccess = repository.register(email, password) // << כאן השינוי
+            val isSuccess = repository.register(email, password)
             _authResult.value = isSuccess
         }
     }
@@ -81,7 +96,9 @@ class ViewModel: ViewModel() {
         }
     }
     fun checkUserLoggedIn() {
-        _isUserLoggedIn.value = repository.isUserLoggedIn()
+        val isLoggedIn = repository.isUserLoggedIn()
+        Log.d("AuthCheck", "isUserLoggedIn = $isLoggedIn")
+        _isUserLoggedIn.value = isLoggedIn
     }
 
     fun signOut(){
@@ -89,4 +106,11 @@ class ViewModel: ViewModel() {
         _isUserLoggedIn.value = false
     }
 
+}
+
+sealed class LoginState {
+    object Idle : LoginState()
+    object Loading : LoginState()
+    object Success : LoginState()
+    data class Error(val message: String) : LoginState()
 }

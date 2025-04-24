@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.net.Uri
+import android.util.Log
 import android.view.WindowInsetsAnimation
 import com.example.finalproject.entities.BookResponse
 import com.example.finalproject.http.NetworkManager
@@ -20,12 +21,13 @@ class AuthRepository {
     private val storage = FirebaseStorage.getInstance().reference
     private val firestore = FirebaseFirestore.getInstance()
 
-    suspend fun login(email: String, password: String): Boolean {
+    suspend fun login(email: String, password: String): Result<Boolean> {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            true
+            Result.success(true)
+
         } catch (e: Exception) {
-            false
+            Result.failure(e)
         }
     }
 
@@ -81,8 +83,8 @@ class AuthRepository {
         imageUri: Uri?,
         onResult: (Boolean) -> Unit
     ) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val userRef = FirebaseFirestore.getInstance().collection("users").document(uid)
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        val userRef = firestore.collection("users").document(uid)
 
         val updateMap = hashMapOf<String, Any>("fullName" to name)
 
@@ -106,6 +108,7 @@ class AuthRepository {
         }
     }
     fun isUserLoggedIn(): Boolean {
+        Log.d("firebaseAuth", (firebaseAuth.currentUser != null).toString())
         return firebaseAuth.currentUser != null
     }
     fun signOut(){
