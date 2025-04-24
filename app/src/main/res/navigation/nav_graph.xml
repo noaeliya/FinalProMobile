@@ -60,12 +60,13 @@
 
     <fragment
         android:id="@+id/bookFragment"
-        android:name="com.example.finalproject.fragments.HomePageFragment"
-        tools:layout="@layout/fragment_home_page">
-    <argument
-        android:name="volumeInfo"
-        app:argType="com.example.finalproject.entities.VolumeInfo" />
+        android:name="com.example.finalproject.fragments.BookFragment"
+        tools:layout="@layout/fragment_book">
+        <argument
+            android:name="book"
+            app:argType="com.example.finalproject.entities.VolumeInfo" />
     </fragment>
+
 
     <fragment
         android:id="@+id/SearchBookAPIFragment"

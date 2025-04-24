@@ -1,7 +1,9 @@
 package com.example.finalproject.entities
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ImageLinks(
     val thumbnail: String?
-) : Serializable
+) : Parcelable

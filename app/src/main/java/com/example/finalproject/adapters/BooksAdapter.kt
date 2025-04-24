@@ -3,9 +3,10 @@ package com.example.finalproject.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.finalproject.R
 import com.example.finalproject.databinding.ItemBookBinding
 import com.example.finalproject.entities.BookItem
+import com.squareup.picasso.Picasso
 
 class BooksAdapter(
     private var bookList: List<BookItem>,
@@ -19,12 +20,16 @@ class BooksAdapter(
 
             val thumbnailUrl = book.volumeInfo?.imageLinks?.thumbnail?.replace("http://", "https://")
             if (!thumbnailUrl.isNullOrEmpty()) {
-                Glide.with(binding.root.context)
+                Picasso.get()
                     .load(thumbnailUrl)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.placeholder_image)
+                    .fit()
                     .centerCrop()
                     .into(binding.bookImage)
-            } else {
-//                binding.bookImage.setImageResource(R.drawable.placeholder_image) // תמונת ברירת מחדל אם אין תמונה
+            }
+            else {
+                binding.bookImage.setImageResource(R.drawable.placeholder_image) // תמונת ברירת מחדל אם אין תמונה
             }
 
             binding.root.setOnClickListener {

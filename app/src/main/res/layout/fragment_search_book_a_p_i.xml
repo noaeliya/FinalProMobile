@@ -4,25 +4,41 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- תמונה למעלה -->
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="184dp"
+        android:layout_height="112dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/placeholder_image" />
+
+    <!-- שדה חיפוש מתחת לתמונה -->
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/search_query"
-        android:hint="חפש ספר..."
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logoImageView"
+        android:layout_marginTop="24dp"
+        android:hint="חפש ספר..." />
 
+    <!-- כפתור חיפוש מתחת לשדה -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
-        android:text="חיפוש"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/search_query"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="חיפוש" />
 
+    <!-- ProgressBar במרכז המסך -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
         android:layout_centerInParent="true"
         android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 </RelativeLayout>

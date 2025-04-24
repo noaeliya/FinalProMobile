@@ -8,49 +8,65 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:layout_marginTop="100dp">
+
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:src="@drawable/placeholder_image" />
 
         <TextView
             android:id="@+id/forSignUpBtn"
-            android:layout_marginTop="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:clickable="true"
-            android:text="אם אין לך חשבון לחץ כאן" />
+            android:layout_marginTop="25dp"
+            android:clickable="true" />
 
-        <TextView
-            android:textSize="24sp"
-            android:layout_marginBottom="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
 
         <EditText
             android:id="@+id/signInEmail"
-            android:hint="אימייל"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="אימייל"
+            />
 
         <EditText
             android:id="@+id/signInPassword"
             android:hint="סיסמה"
             android:inputType="textPassword"
             android:layout_marginTop="8dp"
+            android:gravity="right"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/signInBtn"
-            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            />
 
         <TextView
-            android:layout_marginTop="-37dp"
+            android:layout_marginTop="-40dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:text="להתחברות" />
+
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:text="אם אין לך חשבון לחץ כאן"
+            android:layout_marginBottom="16dp" />
+
     </LinearLayout>
 </ScrollView>

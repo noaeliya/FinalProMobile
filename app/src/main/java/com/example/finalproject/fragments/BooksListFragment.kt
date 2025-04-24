@@ -38,14 +38,9 @@ class BooksListFragment : Fragment() {
             adapter.updateList(it)
         }
 
-//        viewModel.error.observe(viewLifecycleOwner) {
-//            it?.let { message ->
-//                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progress.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
 
-//        viewModel.loading.observe(viewLifecycleOwner) {
-//            binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
-//        }
     }
 }

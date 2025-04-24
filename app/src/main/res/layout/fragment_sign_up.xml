@@ -11,6 +11,12 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal">
 
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:src="@drawable/placeholder_image" />
+
             <TextView
                 android:textSize="24sp"
                 android:layout_marginBottom="16dp"
@@ -33,6 +39,7 @@
                 android:id="@+id/passwordSignUp"
                 android:hint="סיסמה"
                 android:inputType="textPassword"
+                android:gravity="right"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
