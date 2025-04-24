@@ -6,8 +6,10 @@ import com.example.finalproject.entities.BookResponse
 import com.example.finalproject.http.NetworkManager
 import com.google.android.gms.common.api.Response
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import retrofit2.Call
@@ -73,4 +75,41 @@ class AuthRepository {
                 }
             })
     }
+
+    fun updateUserProfile(
+        name: String,
+        imageUri: Uri?,
+        onResult: (Boolean) -> Unit
+    ) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userRef = FirebaseFirestore.getInstance().collection("users").document(uid)
+
+        val updateMap = hashMapOf<String, Any>("fullName" to name)
+
+        if (imageUri != null) {
+            val imageRef = FirebaseStorage.getInstance().reference.child("profileImages/$uid.jpg")
+            imageRef.putFile(imageUri).addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    updateMap["profileImageUrl"] = downloadUri.toString()
+                    userRef.set(updateMap, SetOptions.merge())
+                        .addOnSuccessListener { onResult(true) }
+                        .addOnFailureListener { onResult(false) }
+                }
+            }.addOnFailureListener {
+                onResult(false)
+            }
+        } else {
+            userRef.set(updateMap, SetOptions.merge())
+                .addOnSuccessListener { onResult(true) }
+                .addOnFailureListener { onResult(false) }
+
+        }
+    }
+    fun isUserLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+    fun signOut(){
+        firebaseAuth.signOut()
+    }
 }
+

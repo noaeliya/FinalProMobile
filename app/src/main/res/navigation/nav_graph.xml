@@ -45,6 +45,12 @@
         <action
             android:id="@+id/action_HomePageFragment_to_SearchBookAPIFragment"
             app:destination="@id/SearchBookAPIFragment" />
+        <action
+            android:id="@+id/action_HomePageFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment" />
+        <action
+            android:id="@+id/action_HomePageFragment_to_authFragment"
+            app:destination="@id/authFragment" />
     </fragment>
 
     <fragment
@@ -65,6 +71,13 @@
         <argument
             android:name="book"
             app:argType="com.example.finalproject.entities.VolumeInfo" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.example.finalproject.fragments.ProfileFragment"
+        tools:layout="@layout/fragment_profile">
+
     </fragment>
 
 

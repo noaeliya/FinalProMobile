@@ -31,6 +31,12 @@ class ViewModel: ViewModel() {
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    private val _updateSuccess = MutableLiveData<Boolean>()
+    val updateSuccess: LiveData<Boolean> = _updateSuccess
+
+    private val _isUserLoggedIn = MutableLiveData<Boolean>()
+    val isUserLoggedIn: LiveData<Boolean> = _isUserLoggedIn
+
     fun login(email: CharSequence, password: CharSequence) {
         viewModelScope.launch {
             val isSuccess = repository.login(this@ViewModel.email.value ?: "", this@ViewModel.password.value ?: "")
@@ -68,6 +74,19 @@ class ViewModel: ViewModel() {
                 _error.postValue(it.message)
             }
         }
+    }
+    fun updateProfile(name: String, imageUri: Uri?) {
+        repository.updateUserProfile(name, imageUri) { success ->
+            _updateSuccess.postValue(success)
+        }
+    }
+    fun checkUserLoggedIn() {
+        _isUserLoggedIn.value = repository.isUserLoggedIn()
+    }
+
+    fun signOut(){
+        repository.signOut()
+        _isUserLoggedIn.value = false
     }
 
 }
