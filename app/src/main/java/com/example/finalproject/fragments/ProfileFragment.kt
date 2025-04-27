@@ -12,6 +12,8 @@ import com.example.finalproject.R
 import com.example.finalproject.ViewModel
 import com.example.finalproject.databinding.FragmentProfileBinding
 import android.widget.Toast
+import com.squareup.picasso.Picasso
+import java.io.File
 
 class ProfileFragment : Fragment() {
 
@@ -23,7 +25,7 @@ class ProfileFragment : Fragment() {
     private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             selectedImageUri = it
-            binding.imageView.setImageURI(it) // הצגת התמונה שנבחרה
+            binding.imageProfile.setImageURI(it)
         }
     }
 
@@ -37,6 +39,8 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        loadUserProfileImage() // <-- הוספתי קריאה לטעינת התמונה
 
         binding.imageProfile.setOnClickListener {
             getImage.launch("image/*")
@@ -54,8 +58,27 @@ class ProfileFragment : Fragment() {
         viewModel.updateSuccess.observe(viewLifecycleOwner) { success ->
             if (success) {
                 Toast.makeText(requireContext(), "הפרופיל עודכן בהצלחה", Toast.LENGTH_SHORT).show()
+                loadUserProfileImage() // נטען מחדש את התמונה אחרי עדכון
             } else {
                 Toast.makeText(requireContext(), "שגיאה בעדכון הפרופיל", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun loadUserProfileImage() {
+        viewModel.getUserProfile { userProfile ->
+            userProfile?.profileImageLocalPath?.let { localPath ->
+                val file = File(localPath)
+                if (file.exists()) {
+                    Picasso.get()
+                        .load(file)
+                        .fit()
+                        .centerCrop()
+                        .placeholder(R.drawable.placeholder_image)
+                        .into(binding.imageProfile)
+                } else {
+                    binding.imageProfile.setImageResource(R.drawable.placeholder_image) // fallback אם אין קובץ
+                }
             }
         }
     }

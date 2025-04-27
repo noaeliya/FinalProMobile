@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalproject.entities.BookItem
+import com.example.finalproject.entities.Post
 import com.example.finalproject.entities.UploadState
+import com.example.finalproject.entities.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,8 +24,8 @@ class ViewModel: ViewModel() {
     private val _authResult = MutableLiveData<Boolean>()
     val authResult: LiveData<Boolean> get() = _authResult
 
-    private val _uploadState = MutableLiveData<UploadState>()
-    val uploadState: LiveData<UploadState> = _uploadState
+//    private val _uploadState = MutableLiveData<UploadState>()
+//    val uploadState: LiveData<UploadState> = _uploadState
 
     private val _books = MutableLiveData<List<BookItem>>()
     val books: LiveData<List<BookItem>> = _books
@@ -43,6 +45,13 @@ class ViewModel: ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
+    private val _uploadState = MutableLiveData<UploadState>()
+    val uploadState: LiveData<UploadState> get() = _uploadState
+
+    private val _posts = MutableLiveData<List<Post>>()
+    val posts: LiveData<List<Post>> get() = _posts
+
+
     fun login(email: String, password: String) {
         _loginState.value = LoginState.Loading
 
@@ -57,8 +66,6 @@ class ViewModel: ViewModel() {
     }
 
 
-
-
     fun register(email: String, password: String) {
         viewModelScope.launch {
             val isSuccess = repository.register(email, password)
@@ -66,18 +73,43 @@ class ViewModel: ViewModel() {
         }
     }
 
-    fun uploadPost(imageUri: Uri, description: String) {
-        _uploadState.value = UploadState.Loading
 
-        viewModelScope.launch {
-            try {
-                repository.uploadPost(imageUri, description)
-                _uploadState.value = UploadState.Success
-            } catch (e: Exception) {
-                _uploadState.value = UploadState.Error(e.message ?: "שגיאה לא ידועה")
-            }
+        fun uploadPost(description: String, imageUri: Uri) {
+            _uploadState.value = UploadState.Loading
+
+            repository.uploadPost(description, imageUri,
+                onSuccess = {
+                    _uploadState.value = UploadState.Success
+                },
+                onFailure = { errorMessage ->
+                    _uploadState.value = UploadState.Error(errorMessage)
+                }
+            )
         }
+
+    fun loadPosts() {
+        repository.loadPosts(
+            onSuccess = { postList ->
+                _posts.value = postList
+            },
+            onFailure = { errorMessage ->
+                _uploadState.value = UploadState.Error(errorMessage)
+            }
+        )
     }
+
+//    fun uploadPost(imageUri: Uri, description: String) {
+//        _uploadState.value = UploadState.Loading
+//
+//        viewModelScope.launch {
+//            try {
+//                repository.uploadPost(imageUri, description)
+//                _uploadState.value = UploadState.Success
+//            } catch (e: Exception) {
+//                _uploadState.value = UploadState.Error(e.message ?: "שגיאה לא ידועה")
+//            }
+//        }
+//    }
 
     fun search(query: String) {
         _loading.value = true
@@ -90,11 +122,28 @@ class ViewModel: ViewModel() {
             }
         }
     }
+
+//    fun updateProfile(name: String, imageUri: Uri?) {
+//        repository.updateUserProfile(name, imageUri) { success ->
+//            _updateSuccess.postValue(success)
+//        }
+//    }
+
     fun updateProfile(name: String, imageUri: Uri?) {
         repository.updateUserProfile(name, imageUri) { success ->
-            _updateSuccess.postValue(success)
+            _updateSuccess.value = success
         }
     }
+
+    fun getUserProfile(onResult: (UserProfile?) -> Unit) {
+        repository.getUserProfile(onResult)
+    }
+
+    fun updatePost(postId: String, newDescription: String, newImageUri: Uri?, onResult: (Boolean) -> Unit) {
+        repository.updatePost(postId, newDescription, newImageUri, onResult)
+    }
+
+
     fun checkUserLoggedIn() {
         val isLoggedIn = repository.isUserLoggedIn()
         Log.d("AuthCheck", "isUserLoggedIn = $isLoggedIn")
@@ -114,3 +163,4 @@ sealed class LoginState {
     object Success : LoginState()
     data class Error(val message: String) : LoginState()
 }
+

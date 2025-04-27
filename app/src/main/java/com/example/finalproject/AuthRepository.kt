@@ -1,24 +1,31 @@
 package com.example.finalproject
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import android.view.WindowInsetsAnimation
 import com.example.finalproject.entities.BookResponse
+import com.example.finalproject.entities.Post
+import com.example.finalproject.entities.UserProfile
 import com.example.finalproject.http.NetworkManager
 import com.google.android.gms.common.api.Response
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import retrofit2.Call
+import java.io.File
+import java.io.FileOutputStream
 
 class AuthRepository {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val storage = FirebaseStorage.getInstance().reference
     private val firestore = FirebaseFirestore.getInstance()
 
     suspend fun login(email: String, password: String): Result<Boolean> {
@@ -40,20 +47,46 @@ class AuthRepository {
         }
     }
 
-    suspend fun uploadPost(imageUri: Uri, description: String) {
-        val fileName = "posts/${System.currentTimeMillis()}.jpg"
-        val imageRef = storage.child(fileName)
 
-        val uploadTask = imageRef.putFile(imageUri).await()
-        val downloadUrl = imageRef.downloadUrl.await().toString()
-
-        val post = mapOf(
+    fun uploadPost(description: String, imageUri: Uri, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val post = hashMapOf(
             "description" to description,
-            "imageUrl" to downloadUrl,
-            "timestamp" to FieldValue.serverTimestamp()
+            "imageUri" to imageUri.toString(),
+            "timestamp" to System.currentTimeMillis()
         )
 
-        firestore.collection("book_posts").add(post).await()
+        firestore.collection("posts")
+            .add(post)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Unknown error")
+            }
+    }
+
+    fun loadPosts(onSuccess: (List<Post>) -> Unit, onFailure: (String) -> Unit) {
+        firestore.collection("posts")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val posts = querySnapshot.documents.mapNotNull { doc ->
+                    val description = doc.getString("description") ?: return@mapNotNull null
+                    val imageUri = doc.getString("imageUri") ?: return@mapNotNull null
+                    val timestamp = doc.getLong("timestamp") ?: return@mapNotNull null
+
+                    Post(
+                        id = doc.id,
+                        description = description,
+                        imageUrl = imageUri,
+                        timestamp = timestamp
+                    )
+                }
+                onSuccess(posts)
+            }
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Unknown error")
+            }
     }
 
     fun searchBooks(query: String, callback: (Result<BookResponse>) -> Unit) {
@@ -78,22 +111,77 @@ class AuthRepository {
             })
     }
 
-    fun updateUserProfile(
-        name: String,
-        imageUri: Uri?,
-        onResult: (Boolean) -> Unit
-    ) {
+    fun updateUserProfile(name: String, imageUri: Uri?, onResult: (Boolean) -> Unit) {
         val uid = firebaseAuth.currentUser?.uid ?: return
         val userRef = firestore.collection("users").document(uid)
 
-        val updateMap = hashMapOf<String, Any>("fullName" to name)
+        val updateMap = hashMapOf<String, Any>(
+            "fullName" to name
+        )
 
         if (imageUri != null) {
-            val imageRef = FirebaseStorage.getInstance().reference.child("profileImages/$uid.jpg")
-            imageRef.putFile(imageUri).addOnSuccessListener {
+            val localPath = saveImageLocally(App.context, imageUri, uid)
+            if (localPath != null) {
+                updateMap["profileImageLocalPath"] = localPath
+            }
+        }
+
+        userRef.set(updateMap, SetOptions.merge())
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { onResult(false) }
+    }
+
+    fun getUserProfile(onResult: (UserProfile?) -> Unit) {
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("users").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val profileImageLocalPath = document.getString("profileImageLocalPath")
+                    val fullName = document.getString("fullName")
+                    onResult(UserProfile(fullName ?: "", profileImageLocalPath ?: ""))
+                } else {
+                    onResult(null)
+                }
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
+
+
+
+    private fun saveImageLocally(context: Context, imageUri: Uri, filename: String): String? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(imageUri) ?: return null
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream.close()
+
+            val file = File(context.filesDir, "$filename.jpg")
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun updatePost(postId: String,newDescription: String,newImageUri: Uri?, onResult: (Boolean) -> Unit) {
+        val postRef = FirebaseFirestore.getInstance().collection("posts").document(postId)
+
+        if (newImageUri != null) {
+            val imageRef = FirebaseStorage.getInstance().reference.child("postImages/$postId.jpg")
+
+            imageRef.putFile(newImageUri).addOnSuccessListener {
                 imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    updateMap["profileImageUrl"] = downloadUri.toString()
-                    userRef.set(updateMap, SetOptions.merge())
+                    val updatedData = mapOf(
+                        "description" to newDescription,
+                        "imageUrl" to downloadUri.toString()
+                    )
+                    postRef.update(updatedData)
                         .addOnSuccessListener { onResult(true) }
                         .addOnFailureListener { onResult(false) }
                 }
@@ -101,12 +189,14 @@ class AuthRepository {
                 onResult(false)
             }
         } else {
-            userRef.set(updateMap, SetOptions.merge())
+            postRef.update("description", newDescription)
                 .addOnSuccessListener { onResult(true) }
                 .addOnFailureListener { onResult(false) }
-
         }
+
     }
+
+
     fun isUserLoggedIn(): Boolean {
         Log.d("firebaseAuth", (firebaseAuth.currentUser != null).toString())
         return firebaseAuth.currentUser != null
@@ -114,5 +204,8 @@ class AuthRepository {
     fun signOut(){
         firebaseAuth.signOut()
     }
+
+
+
 }
 

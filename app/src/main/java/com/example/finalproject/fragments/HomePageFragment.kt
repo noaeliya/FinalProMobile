@@ -27,9 +27,10 @@ import com.example.finalproject.entities.Post
 class HomePageFragment : Fragment() {
 
     private lateinit var binding: FragmentHomePageBinding
-    private lateinit var firestore: FirebaseFirestore
     private val posts = mutableListOf<Post>()
     private lateinit var adapter: PostAdapter
+
+
     private val viewModel: ViewModel by viewModels()
 
     override fun onCreateView(
@@ -41,10 +42,13 @@ class HomePageFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        firestore = FirebaseFirestore.getInstance()
         adapter = PostAdapter(posts)
-
         binding.recyclerPosts.adapter = adapter
+        binding.recyclerPosts.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.posts.observe(viewLifecycleOwner) { posts ->
+            adapter.updatePosts(posts)
+        }
 
         binding.signOutBtn.setOnClickListener {
             viewModel.signOut()
@@ -57,24 +61,7 @@ class HomePageFragment : Fragment() {
             )
         }
 
-        loadPosts()
+        viewModel.loadPosts()
     }
 
-    private fun loadPosts() {
-        firestore.collection("book_posts")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                posts.clear()
-                for (doc in result) {
-                    val post = doc.toObject(Post::class.java)
-                    posts.add(post)
-                }
-                adapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener { e ->
-                Log.e("HomeFragment", "שגיאה בטעינת הפוסטים: ${e.message}", e)
-                Toast.makeText(requireContext(), "שגיאה בטעינה", Toast.LENGTH_SHORT).show()
-            }
-    }
 }

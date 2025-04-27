@@ -18,14 +18,6 @@
             android:layout_gravity="center"
             android:src="@drawable/placeholder_image" />
 
-        <TextView
-            android:id="@+id/forSignUpBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:clickable="true" />
-
-
 
         <EditText
             android:id="@+id/signInEmail"
@@ -60,9 +52,11 @@
 
 
         <TextView
+            android:id="@+id/forSignUpBtn"
             android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:text="אם אין לך חשבון לחץ כאן"

@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_authFragment_to_HomePageFragment"
             app:destination="@id/HomePageFragment" />
+        <action
+            android:id="@+id/action_authFragment_to_signUpFragment2"
+            app:destination="@id/signUpFragment" />
 
     </fragment>
 
@@ -33,7 +36,11 @@
     <fragment
         android:id="@+id/AddingPostFragment"
         android:name="com.example.finalproject.fragments.AddingPostFragment"
-        tools:layout="@layout/fragment_adding_post" />
+        tools:layout="@layout/fragment_adding_post" >
+        <action
+            android:id="@+id/action_AddingPostFragment_to_HomePageFragment"
+            app:destination="@id/HomePageFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/HomePageFragment"

@@ -32,6 +32,7 @@ private const val ARG_PARAM2 = "param2"
 class authFragment : Fragment() {
     private var forSignUpBtn: TextView? = null
     private var signInBtn: Button? = null
+    private var registerBtn: TextView? = null
     private val viewModel: ViewModel by viewModels()
 
 
@@ -95,8 +96,6 @@ class authFragment : Fragment() {
                 }
             }
         }
-
-
 
         forSignUpBtn?.setOnClickListener {
             findNavController().navigate(R.id.action_authFragment_to_signUpFragment)

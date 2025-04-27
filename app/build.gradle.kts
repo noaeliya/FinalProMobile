@@ -94,6 +94,12 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
     implementation ("com.squareup.picasso:picasso:2.8")
 
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+
+    // בשביל להשתמש ב-coroutines
+    implementation ("androidx.room:room-ktx:2.6.1")
 
 
     testImplementation(libs.junit)
