@@ -192,21 +192,31 @@ class AuthRepository {
         }
     }
 
-    fun getUserPosts(userId: String, onSuccess: (List<Post>) -> Unit, onFailure: (String) -> Unit) {
-        val userID = firebaseAuth.currentUser?.uid ?: return
-        firestore.collection("posts")
-            .whereEqualTo("userId", userID) 
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val posts = snapshot.documents.mapNotNull { document ->
-                    document.toObject(Post::class.java) // הופך את המסמך לאובייקט Post
+    fun getUserPosts(userId: String, onSuccess: (List<MyPost>) -> Unit, onFailure: (String) -> Unit) {
+        Log.d("Firestore", "Fetching posts for user: $userId")  // לוג כדי לדעת מתי התחלנו לחפש
+
+        val postsRef = FirebaseFirestore.getInstance().collection("posts")
+        postsRef.whereEqualTo("userId", userId).get()
+            .addOnSuccessListener { documents ->
+                Log.d("Firestore", "Found ${documents.size()} posts")  // לוג כמות הפוסטים שנמצאו
+
+                val posts = mutableListOf<MyPost>()
+                for (document in documents) {
+                    val post = document.toObject(MyPost::class.java)
+                    val imageUrl = document.getString("imageUrl")  // שליפת ה-URL בצורה ישירה
+                    Log.d("Firestore", "Fetched post with imageUrl: $imageUrl")
+                    posts.add(post)
                 }
                 onSuccess(posts)
             }
-            .addOnFailureListener { e ->
-                onFailure(e.message ?: "Unknown error")
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Error fetching posts: ${exception.message}")  // לוג שגיאה אם משהו לא עובד
+                onFailure(exception.message ?: "Error fetching posts")
             }
     }
+
+
+
 
 //    fun getUserPosts(userId: String, onResult: (List<MyPost>) -> Unit, onError: (Exception) -> Unit) {
 //        firestore.collection("posts")

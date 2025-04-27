@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.finalproject.entities.BookItem
+import com.example.finalproject.entities.MyPost
 import com.example.finalproject.entities.Post
 import com.example.finalproject.entities.UploadState
 import com.example.finalproject.entities.UserProfile
@@ -48,12 +49,15 @@ class ViewModel: ViewModel() {
     private val _uploadState = MutableLiveData<UploadState>()
     val uploadState: LiveData<UploadState> get() = _uploadState
 
-    private val _userPosts = MutableLiveData<List<Post>>()
-    val userPosts: LiveData<List<Post>> = _userPosts
-
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts
 
+    private val _postsLiveData = MutableLiveData<List<MyPost>>()
+    val postsLiveData: LiveData<List<MyPost>> get() = _postsLiveData
+
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
 
 
     fun login(email: String, password: String) {
@@ -101,31 +105,22 @@ class ViewModel: ViewModel() {
         )
     }
 
-//    fun loadUserPosts(userId: String) {
-//        repository.getUserPosts(
-//            userId = userId,
-//            onResult = { postsList ->
-//                _userPosts.postValue(postsList)
-//            },
-//            onError = { exception ->
-//                _error.postValue(exception.message ?: "שגיאה בטעינת הפוסטים")
-//            }
-//        )
-//    }
+    fun fetchUserPosts(userId: String) {
+        Log.d("ViewModel", "Fetching posts for user: $userId")  // לוג לציין שהתחלנו לחפש פוסטים
+
+        repository.getUserPosts(userId,
+            onSuccess = { posts ->
+                Log.d("ViewModel", "Posts fetched successfully: ${posts.size} posts found")  // לוג להצלחה עם מספר הפוסטים
+                _postsLiveData.value = posts
+            },
+            onFailure = { error ->
+                Log.e("ViewModel", "Error fetching posts: $error")  // לוג שגיאה אם קרתה בעיה
+                _errorMessage.value = error
+            }
+        )
+    }
 
 
-//    fun uploadPost(imageUri: Uri, description: String) {
-//        _uploadState.value = UploadState.Loading
-//
-//        viewModelScope.launch {
-//            try {
-//                repository.uploadPost(imageUri, description)
-//                _uploadState.value = UploadState.Success
-//            } catch (e: Exception) {
-//                _uploadState.value = UploadState.Error(e.message ?: "שגיאה לא ידועה")
-//            }
-//        }
-//    }
 
     fun search(query: String) {
         _loading.value = true
