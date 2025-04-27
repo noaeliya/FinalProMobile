@@ -46,6 +46,7 @@ class AddingPostFragment : Fragment() {
         }
 
         binding.btnUpload.setOnClickListener {
+            binding.spinner.visibility = View.VISIBLE
             uploadPost()
         }
 
@@ -87,13 +88,16 @@ class AddingPostFragment : Fragment() {
         viewModel.uploadState.observe(viewLifecycleOwner) { state: UploadState ->
             when (state) {
                 is UploadState.Success -> {
+                    binding.spinner.visibility = View.GONE
                     Toast.makeText(requireContext(), "פוסט הועלה בהצלחה", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_AddingPostFragment_to_HomePageFragment)
                 }
                 is UploadState.Error -> {
+                    binding.spinner.visibility = View.GONE
                     Toast.makeText(requireContext(), "שגיאה: ${state.message}", Toast.LENGTH_SHORT).show()
                 }
                 is UploadState.Loading -> {
+                    binding.spinner.visibility = View.VISIBLE
                 }
                 else -> {}
             }
