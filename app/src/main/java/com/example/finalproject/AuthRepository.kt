@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.WindowInsetsAnimation
 import com.example.finalproject.entities.BookResponse
+import com.example.finalproject.entities.MyPost
 import com.example.finalproject.entities.Post
 import com.example.finalproject.entities.UserProfile
 import com.example.finalproject.http.NetworkManager
@@ -22,6 +23,7 @@ import kotlinx.coroutines.tasks.await
 import retrofit2.Call
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 
 class AuthRepository {
 
@@ -48,22 +50,44 @@ class AuthRepository {
     }
 
 
-    fun uploadPost(description: String, imageUri: Uri, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        val post = hashMapOf(
-            "description" to description,
-            "imageUri" to imageUri.toString(),
-            "timestamp" to System.currentTimeMillis()
-        )
+    fun uploadPost(
+        description: String,
+        imageUri: Uri,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
 
-        firestore.collection("posts")
-            .add(post)
-            .addOnSuccessListener {
-                onSuccess()
+        val storageReference =
+            FirebaseStorage.getInstance().reference.child("post_images/${UUID.randomUUID()}")
+
+        // העלאת התמונה ל-Storage
+        storageReference.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                storageReference.downloadUrl.addOnSuccessListener { downloadUri ->
+                    val post = hashMapOf(
+                        "userId" to firebaseAuth.currentUser?.uid,
+                        "description" to description,
+                        "imageUri" to downloadUri.toString(),
+                        "timestamp" to System.currentTimeMillis()
+                    )
+
+                    firestore.collection("posts")
+                        .add(post)
+                        .addOnSuccessListener {
+                            onSuccess()
+                        }
+                        .addOnFailureListener { e ->
+                            onFailure(e.message ?: "Unknown error")
+                        }
+                }.addOnFailureListener { e ->
+                    onFailure(e.message ?: "Failed to retrieve download URL")
+                }
             }
             .addOnFailureListener { e ->
-                onFailure(e.message ?: "Unknown error")
+                onFailure(e.message ?: "Failed to upload image")
             }
     }
+
 
     fun loadPosts(onSuccess: (List<Post>) -> Unit, onFailure: (String) -> Unit) {
         firestore.collection("posts")
@@ -98,7 +122,7 @@ class AuthRepository {
                     call: retrofit2.Call<BookResponse>,
                     response: retrofit2.Response<BookResponse>
                 ) {
-                    if (response.isSuccessful && response.body() != null){
+                    if (response.isSuccessful && response.body() != null) {
                         callback(Result.success(response.body()!!))
                     } else {
                         callback(Result.failure(Throwable("לא נמצאו תוצאות")))
@@ -149,7 +173,6 @@ class AuthRepository {
     }
 
 
-
     private fun saveImageLocally(context: Context, imageUri: Uri, filename: String): String? {
         return try {
             val inputStream = context.contentResolver.openInputStream(imageUri) ?: return null
@@ -169,43 +192,48 @@ class AuthRepository {
         }
     }
 
-    fun updatePost(postId: String,newDescription: String,newImageUri: Uri?, onResult: (Boolean) -> Unit) {
-        val postRef = FirebaseFirestore.getInstance().collection("posts").document(postId)
-
-        if (newImageUri != null) {
-            val imageRef = FirebaseStorage.getInstance().reference.child("postImages/$postId.jpg")
-
-            imageRef.putFile(newImageUri).addOnSuccessListener {
-                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    val updatedData = mapOf(
-                        "description" to newDescription,
-                        "imageUrl" to downloadUri.toString()
-                    )
-                    postRef.update(updatedData)
-                        .addOnSuccessListener { onResult(true) }
-                        .addOnFailureListener { onResult(false) }
+    fun getUserPosts(userId: String, onSuccess: (List<Post>) -> Unit, onFailure: (String) -> Unit) {
+        val userID = firebaseAuth.currentUser?.uid ?: return
+        firestore.collection("posts")
+            .whereEqualTo("userId", userID) 
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val posts = snapshot.documents.mapNotNull { document ->
+                    document.toObject(Post::class.java) // הופך את המסמך לאובייקט Post
                 }
-            }.addOnFailureListener {
-                onResult(false)
+                onSuccess(posts)
             }
-        } else {
-            postRef.update("description", newDescription)
-                .addOnSuccessListener { onResult(true) }
-                .addOnFailureListener { onResult(false) }
-        }
-
+            .addOnFailureListener { e ->
+                onFailure(e.message ?: "Unknown error")
+            }
     }
+
+//    fun getUserPosts(userId: String, onResult: (List<MyPost>) -> Unit, onError: (Exception) -> Unit) {
+//        firestore.collection("posts")
+//            .whereEqualTo("userId", userId)
+//            .get()
+//            .addOnSuccessListener { querySnapshot ->
+//                val postList = querySnapshot.documents.mapNotNull { document ->
+//                    Log.d("noaaaaa", document.toString()+""+userId.toString())
+//                    document.toObject(MyPost::class.java)
+//                }
+//                onResult(postList)
+//            }
+//
+//            .addOnFailureListener { exception ->
+//                onError(exception)
+//            }
+//    }
 
 
     fun isUserLoggedIn(): Boolean {
         Log.d("firebaseAuth", (firebaseAuth.currentUser != null).toString())
         return firebaseAuth.currentUser != null
     }
-    fun signOut(){
+
+    fun signOut() {
         firebaseAuth.signOut()
     }
-
-
-
 }
+
 

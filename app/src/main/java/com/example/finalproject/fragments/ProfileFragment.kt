@@ -6,12 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import com.example.finalproject.R
 import com.example.finalproject.ViewModel
 import com.example.finalproject.databinding.FragmentProfileBinding
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.squareup.picasso.Picasso
 import java.io.File
 
@@ -21,6 +23,7 @@ class ProfileFragment : Fragment() {
     private val viewModel: ViewModel by viewModels()
 
     private var selectedImageUri: Uri? = null
+    private var myPostsBtn: TextView ? = null
 
     private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -46,6 +49,10 @@ class ProfileFragment : Fragment() {
             getImage.launch("image/*")
         }
 
+        binding.MyPostsBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_ProfileFragment_to_MyPostsFragment)
+        }
+
         binding.savebutton.setOnClickListener {
             val name = binding.editTextNameProfile.text.toString().trim()
             if (name.isNotEmpty()) {
@@ -59,9 +66,13 @@ class ProfileFragment : Fragment() {
             if (success) {
                 Toast.makeText(requireContext(), "הפרופיל עודכן בהצלחה", Toast.LENGTH_SHORT).show()
                 loadUserProfileImage() // נטען מחדש את התמונה אחרי עדכון
+            findNavController().navigate(R.id.action_ProfileFragment_to_HomePageFragment)
             } else {
                 Toast.makeText(requireContext(), "שגיאה בעדכון הפרופיל", Toast.LENGTH_SHORT).show()
             }
+        }
+        myPostsBtn?.setOnClickListener {
+            findNavController().navigate(R.id.action_ProfileFragment_to_MyPostsFragment)
         }
     }
 

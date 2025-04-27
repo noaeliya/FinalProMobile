@@ -85,6 +85,12 @@
         android:name="com.example.finalproject.fragments.ProfileFragment"
         tools:layout="@layout/fragment_profile">
 
+        <action
+            android:id="@+id/action_ProfileFragment_to_HomePageFragment"
+            app:destination="@id/HomePageFragment" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_MyPostsFragment"
+            app:destination="@id/MyPostsFragment" />
     </fragment>
 
 
@@ -97,5 +103,12 @@
             app:destination="@id/booksListFragment" />
     </fragment>
 
+
+    <fragment
+        android:id="@+id/MyPostsFragment"
+        android:name="com.example.finalproject.fragments.MyPostsFragment"
+        tools:layout="@layout/fragment_my_posts" >
+
+    </fragment>
 
     </navigation>

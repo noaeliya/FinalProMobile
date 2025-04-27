@@ -48,8 +48,12 @@ class ViewModel: ViewModel() {
     private val _uploadState = MutableLiveData<UploadState>()
     val uploadState: LiveData<UploadState> get() = _uploadState
 
+    private val _userPosts = MutableLiveData<List<Post>>()
+    val userPosts: LiveData<List<Post>> = _userPosts
+
     private val _posts = MutableLiveData<List<Post>>()
-    val posts: LiveData<List<Post>> get() = _posts
+    val posts: LiveData<List<Post>> = _posts
+
 
 
     fun login(email: String, password: String) {
@@ -72,7 +76,6 @@ class ViewModel: ViewModel() {
             _authResult.value = isSuccess
         }
     }
-
 
         fun uploadPost(description: String, imageUri: Uri) {
             _uploadState.value = UploadState.Loading
@@ -97,6 +100,19 @@ class ViewModel: ViewModel() {
             }
         )
     }
+
+//    fun loadUserPosts(userId: String) {
+//        repository.getUserPosts(
+//            userId = userId,
+//            onResult = { postsList ->
+//                _userPosts.postValue(postsList)
+//            },
+//            onError = { exception ->
+//                _error.postValue(exception.message ?: "שגיאה בטעינת הפוסטים")
+//            }
+//        )
+//    }
+
 
 //    fun uploadPost(imageUri: Uri, description: String) {
 //        _uploadState.value = UploadState.Loading
@@ -139,9 +155,9 @@ class ViewModel: ViewModel() {
         repository.getUserProfile(onResult)
     }
 
-    fun updatePost(postId: String, newDescription: String, newImageUri: Uri?, onResult: (Boolean) -> Unit) {
-        repository.updatePost(postId, newDescription, newImageUri, onResult)
-    }
+//    fun updatePost(postId: String, newDescription: String, newImageUri: Uri?, onResult: (Boolean) -> Unit) {
+//        repository.updatePost(postId, newDescription, newImageUri, onResult)
+//    }
 
 
     fun checkUserLoggedIn() {
